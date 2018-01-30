@@ -4,6 +4,7 @@ var chalk = require('chalk');
 var initAemSyncWatcher = function(options){
     var pushInterval = options.pushInterval || 300;
     var exclude = options.exclude || '';
+    var cb = options.cb || function() {};
 
     if(!(options && options.targets.length)){
         console.error(chalk.red('AemSync targets property missing!'));
@@ -18,7 +19,8 @@ var initAemSyncWatcher = function(options){
         if (err) {
             return console.log('Error when pushing package', err);
         }
-        console.log('Package pushed to' + host)
+        console.log('Package pushed to' + host);
+        cb();
     };
 
     var pusher = new aemsync.Pusher(options.targets, pushInterval, onPushEnd);
@@ -26,7 +28,7 @@ var initAemSyncWatcher = function(options){
 
     pusher.start();
     watcher.watch(options.watchDir, exclude, function(localPath){
-        pusher.enqueue(localPath)
+        pusher.enqueue(localPath);
     });
 };
 
